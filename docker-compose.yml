@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+
+  # NGINX
+  nginx:
+    image: jwilder/nginx-proxy
+    container_name: nginx
+    hostname: nginx.${TLD-local}
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ${DATA-./data}/nginx/conf.d:/etc/nginx/conf.d
+      - ${DATA-./data}/nginx/vhost.d:/etc/nginx/vhost.d
+      - ${DATA-./data}/nginx/html:/usr/share/nginx/html
+      - ${DATA-./data}/nginx/certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  # Let's encrypt
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: letsencrypt
+    hostname: letsencrypt.${TLD-local}
+    restart: always
+    environment:
+      - NGINX_PROXY_CONTAINER=nginx
+    volumes:
+      - ${DATA-./data}/nginx/conf.d:/etc/nginx/conf.d
+      - ${DATA-./data}/nginx/vhost.d:/etc/nginx/vhost.d
+      - ${DATA-./data}/nginx/html:/usr/share/nginx/html
+      - ${DATA-./data}/nginx/certs:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+networks:
+
+  default:
+    name: proxy
