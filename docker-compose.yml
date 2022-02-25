@@ -6,7 +6,6 @@ services:
   nginx:
     image: jwilder/nginx-proxy
     container_name: nginx
-    hostname: nginx.${TLD-local}
     restart: always
     ports:
       - '80:80'
@@ -22,7 +21,6 @@ services:
   letsencrypt:
     image: jrcs/letsencrypt-nginx-proxy-companion
     container_name: letsencrypt
-    hostname: letsencrypt.${TLD-local}
     restart: always
     environment:
       - NGINX_PROXY_CONTAINER=nginx
